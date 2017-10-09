@@ -1,12 +1,12 @@
-#pragma parameter scanLineScale "Scan Line Scale" 1.0 0.5 3.0 0.5
-#pragma parameter blendExponent "Blend Exponent" 0.3 0.1 1.0 0.1
+#pragma parameter scanLineScale "Scan Line Scale" 2.0 0.5 8.0 0.5
+#pragma parameter blendExponent "Blend Exponent" 0.2 0.1 1.0 0.1
 
 #ifndef PARAMETER_UNIFORM
-#define scanLineScale 1.0
-#define blendExponent 0.3
+#define scanLineScale 2.0
+#define blendExponent 0.2
 #endif
 
-precision mediump float;
+precision highp float;
 
 #if defined(FRAGMENT)
 
@@ -30,7 +30,7 @@ void main()
 {
     vec4 col = texture2D(Texture, vTexCoord);
 	vec2 tScanline = vScanline;
-	tScanline.y = mod(floor(tScanline.y * hScale * scanLineScale), 2.0);
+	tScanline.y = mod(tScanline.y * hScale * scanLineScale, 2.0);
 	tScanline.x = 1.0 - tScanline.y;
 	
     gl_FragColor = (tScanline.x + tScanline.y * powv(col, blendExponent)) * col;
