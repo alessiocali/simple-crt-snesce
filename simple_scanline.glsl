@@ -11,7 +11,7 @@ precision highp float;
 #if defined(FRAGMENT)
 
 varying vec2 vTexCoord;
-varying vec2 vScanline;
+varying float vY;
 
 uniform sampler2D Texture;
 #ifdef PARAMETER_UNIFORM
@@ -23,23 +23,24 @@ uniform float blendExponent;
 
 vec4 powv(vec4 base, float ex) 
 {
-	return vec4(pow(base.x, ex), pow(base.y, ex), pow(base.z, ex), pow(base.w, ex));
+    return vec4(pow(base.x, ex), pow(base.y, ex), pow(base.z, ex), pow(base.w, ex));
 }
 
 void main()
 {
     vec4 col = texture2D(Texture, vTexCoord);
-	vec2 tScanline = vScanline;
-	tScanline.y = mod(tScanline.y * hScale * scanLineScale, 2.0);
-	tScanline.x = 1.0 - tScanline.y;
-	
-    gl_FragColor = (tScanline.x + tScanline.y * powv(col, blendExponent)) * col;
+    vec2 scanline;
+
+    scanline.y = mod(vY * hScale * scanLineScale, 2.0);
+    scanline.x = 1.0 - scanline.y;
+
+    gl_FragColor = (scanline.x + scanline.y * powv(col, blendExponent)) * col;
 }
 
 #elif defined(VERTEX)
 
 varying vec2 vTexCoord;
-varying vec2 vScanline;
+varying float vY;
 
 attribute vec4 VertexCoord;
 attribute vec4 TexCoord;
@@ -48,8 +49,8 @@ uniform mat4 MVPMatrix;
 
 void main()
 {
-	gl_Position = MVPMatrix * VertexCoord;
-	vScanline = VertexCoord.xy;
-	vTexCoord = TexCoord.xy;
+    gl_Position = MVPMatrix * VertexCoord;
+    vY = VertexCoord.y;
+    vTexCoord = TexCoord.xy;
 }
 #endif
